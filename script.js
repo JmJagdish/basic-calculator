@@ -5,6 +5,21 @@ let previousDisplay = document.getElementById("previousDisplay");
 
 let displayData = [];
 
+// -----------------------------------
+// Theme Toggle
+// -----------------------------------
+const themeToggle = document.getElementById("themeToggle");
+
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    themeToggle.innerText = "☀️";
+  } else {
+    themeToggle.innerText = "🌙";
+  }
+});
+
 let firstNumber = null;
 let operator = null;
 let waitingForSecondNumber = false;

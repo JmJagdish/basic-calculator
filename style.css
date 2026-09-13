@@ -4,89 +4,218 @@
   box-sizing: border-box;
 }
 
+:root {
+  --bg: #e0e5ec;
+  --text: #34383f;
+  --button-text: #454a52;
+  --secondary-text: #7b8088;
+
+  --shadow-dark: #bec3c9;
+  --shadow-light: #ffffff;
+
+  --operator: #59616b;
+  --clear: #c94c4c;
+  --delete: #c2763e;
+
+  --equal-bg: #596b7d;
+  --equal-hover: #4d5e6f;
+
+  --equal-shadow-dark: #3e4c59;
+  --equal-shadow-light: #687c90;
+}
+
 body {
   min-height: 100vh;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e0e5ec;
+
+  background: var(--bg);
+
   font-family: Arial, sans-serif;
+
+  transition: background 0.3s ease;
 }
 
-/* Calculator */
+/* =========================
+   DARK THEME
+========================= */
+
+body.dark {
+  --bg: #252a32;
+  --text: #e8edf3;
+  --button-text: #d6dbe2;
+  --secondary-text: #9da5b0;
+
+  --shadow-dark: #171a1f;
+  --shadow-light: #333a45;
+
+  --operator: #aeb8c4;
+  --clear: #ff7272;
+  --delete: #e59a62;
+
+  --equal-bg: #465466;
+  --equal-hover: #536477;
+
+  --equal-shadow-dark: #171c23;
+  --equal-shadow-light: #617285;
+}
+
+/* =========================
+   CALCULATOR
+========================= */
 
 .calculator {
+  position: relative;
+
   width: 350px;
-  padding: 25px;
+
+  padding: 75px 25px 25px;
+
   border-radius: 30px;
-  background: #e0e5ec;
+
+  background: var(--bg);
 
   box-shadow:
-    15px 15px 30px #bec3c9,
-    -15px -15px 30px #ffffff;
+    15px 15px 30px var(--shadow-dark),
+    -15px -15px 30px var(--shadow-light);
+
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-/* Display */
+/* =========================
+   THEME TOGGLE
+========================= */
+
+.theme-toggle {
+  position: absolute;
+
+  top: 20px;
+  right: 20px;
+
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--bg);
+  color: var(--text);
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  box-shadow:
+    5px 5px 10px var(--shadow-dark),
+    -5px -5px 10px var(--shadow-light);
+
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+}
+
+.theme-toggle:active {
+  transform: translateY(2px);
+
+  box-shadow:
+    inset 4px 4px 8px var(--shadow-dark),
+    inset -4px -4px 8px var(--shadow-light);
+}
+
+/* =========================
+   DISPLAY
+========================= */
 
 .display {
   width: 100%;
   min-height: 110px;
+
   margin-bottom: 25px;
   padding: 20px;
 
   display: flex;
   flex-direction: column;
+
   justify-content: flex-end;
   align-items: flex-end;
 
   border-radius: 20px;
-  background: #e0e5ec;
+
+  background: var(--bg);
 
   box-shadow:
-    inset 8px 8px 16px #bec3c9,
-    inset -8px -8px 16px #ffffff;
+    inset 8px 8px 16px var(--shadow-dark),
+    inset -8px -8px 16px var(--shadow-light);
 
   overflow: hidden;
+
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 #previousDisplay {
   width: 100%;
   min-height: 25px;
-  color: #7b8088;
+
+  color: var(--secondary-text);
+
   font-size: 16px;
+
   text-align: right;
 }
 
 #currentDisplay {
   width: 100%;
-  color: #34383f;
+
+  color: var(--text);
+
   font-size: 38px;
   font-weight: 600;
+
   text-align: right;
 
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Buttons Container */
+/* =========================
+   BUTTON CONTAINER
+========================= */
 
 .buttons {
   display: grid;
+
   grid-template-columns: repeat(4, 1fr);
+
   gap: 15px;
 }
 
-/* Buttons */
+/* =========================
+   BUTTONS
+========================= */
 
 .btn {
   height: 60px;
+
   border: none;
   outline: none;
 
   border-radius: 18px;
 
-  background: #e0e5ec;
-  color: #454a52;
+  background: var(--bg);
+  color: var(--button-text);
 
   font-size: 20px;
   font-weight: 600;
@@ -94,8 +223,8 @@ body {
   cursor: pointer;
 
   box-shadow:
-    7px 7px 14px #bec3c9,
-    -7px -7px 14px #ffffff;
+    7px 7px 14px var(--shadow-dark),
+    -7px -7px 14px var(--shadow-light);
 
   transition: all 0.15s ease;
 }
@@ -103,76 +232,121 @@ body {
 /* Hover */
 
 .btn:hover {
-  color: #22262c;
+  color: var(--text);
+
   transform: translateY(-2px);
 }
 
-/* Click / Press */
+/* Press */
 
 .btn:active {
   transform: translateY(2px);
 
   box-shadow:
-    inset 5px 5px 10px #bec3c9,
-    inset -5px -5px 10px #ffffff;
+    inset 5px 5px 10px var(--shadow-dark),
+    inset -5px -5px 10px var(--shadow-light);
 }
 
-/* Operators */
+/* =========================
+   OPERATORS
+========================= */
 
 .operator {
-  color: #59616b;
+  color: var(--operator);
+
   font-size: 22px;
 }
 
-/* Clear */
+/* =========================
+   CLEAR
+========================= */
 
 .btn-clear {
-  color: #c94c4c;
+  color: var(--clear);
 }
 
-/* Delete */
+/* =========================
+   DELETE
+========================= */
 
 .btn-delete {
-  color: #c2763e;
+  color: var(--delete);
 }
 
-/* Equal Button */
+/* =========================
+   EQUAL
+========================= */
 
 .btn-equal {
   grid-column: span 2;
 
   color: #ffffff;
-  background: #596b7d;
+
+  background: var(--equal-bg);
 
   box-shadow:
-    7px 7px 14px #bec3c9,
-    -7px -7px 14px #ffffff;
+    7px 7px 14px var(--shadow-dark),
+    -7px -7px 14px var(--shadow-light);
 }
 
 .btn-equal:hover {
-  background: #4d5e6f;
+  background: var(--equal-hover);
+
   color: #ffffff;
 }
 
 .btn-equal:active {
   box-shadow:
-    inset 5px 5px 10px #3e4c59,
-    inset -5px -5px 10px #687c90;
+    inset 5px 5px 10px var(--equal-shadow-dark),
+    inset -5px -5px 10px var(--equal-shadow-light);
 }
 
-/* Responsive */
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 400px) {
+
+  body {
+    min-height: 100dvh;
+
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
   .calculator {
-    width: 90%;
-    padding: 20px;
+    width: 100%;
+    min-height: 100dvh;
+
+    padding: 75px 20px 20px;
+
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+  .display {
+    min-height: 120px;
+
+    margin-bottom: 20px;
+  }
+
+  .buttons {
+    gap: 12px;
   }
 
   .btn {
-    height: 55px;
+    height: 60px;
+
+    border-radius: 16px;
   }
 
   #currentDisplay {
     font-size: 32px;
+  }
+
+  .theme-toggle {
+    top: 20px;
+    right: 20px;
   }
 }
