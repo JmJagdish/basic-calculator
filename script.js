@@ -1,230 +1,145 @@
-let buttons = document.getElementsByClassName("btn");
-
-let display = document.getElementById("currentDisplay");
-let previousDisplay = document.getElementById("previousDisplay");
-
-let displayData = [];
-
-// -----------------------------------
-// Theme Toggle
-// -----------------------------------
+const buttons = document.querySelectorAll(".btn");
+const display = document.getElementById("currentDisplay");
+const previousDisplay = document.getElementById("previousDisplay");
 const themeToggle = document.getElementById("themeToggle");
 
-themeToggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
+let currentValue = "0";
+let firstNumber = null;
+let operator = null;
+let shouldResetDisplay = false;
 
-  if (document.body.classList.contains("dark")) {
-    themeToggle.innerText = "☀️";
-  } else {
-    themeToggle.innerText = "🌙";
+themeToggle.addEventListener("click", () => {
+  const isDark = document.body.classList.toggle("dark");
+  themeToggle.textContent = isDark ? "☀️" : "🌙";
+});
+
+buttons.forEach((button) => {
+  button.addEventListener("click", () => handleInput(button.dataset.action));
+});
+
+document.addEventListener("keydown", (event) => {
+  const keyMap = {
+    "+": "+", "-": "−", "*": "×", "/": "÷", "%": "%",
+    Enter: "=", "=": "=", Escape: "AC", Backspace: "DEL",
+  };
+  const action = /^[0-9.]$/.test(event.key) ? event.key : keyMap[event.key];
+  if (action) {
+    event.preventDefault();
+    handleInput(action);
   }
 });
 
-let firstNumber = null;
-let operator = null;
-let waitingForSecondNumber = false;
-
-// -----------------------------------
-// Button Click
-// -----------------------------------
-
-for (let i = 0; i < buttons.length; i++) {
-  buttons[i].addEventListener("click", (e) => {
-    let value = e.target.innerText;
-
-    // Number
-    if (!isNaN(value) || value === ".") {
-      addToDisplay(value);
-    }
-
-    // Operator
-    else if (
-      value === "+" ||
-      value === "−" ||
-      value === "×" ||
-      value === "÷" ||
-      value === "%"
-    ) {
-      chooseOperator(value);
-    }
-
-    // Equal
-    else if (value === "=") {
-      calculate();
-    }
-
-    // Clear
-    else if (value === "AC") {
-      clearCalculator();
-    }
-
-    // Delete
-    else if (value === "DEL") {
-      deleteLast();
-    }
-  });
+function handleInput(action) {
+  if (/^[0-9.]$/.test(action)) inputDigit(action);
+  else if (["+", "−", "×", "÷", "%"].includes(action)) selectOperator(action);
+  else if (action === "=") calculate();
+  else if (action === "AC") clearCalculator();
+  else if (action === "DEL") deleteLast();
 }
 
-// -----------------------------------
-// Add Number To Display
-// -----------------------------------
-
-function addToDisplay(value) {
-  // If we just selected an operator,
-  // start entering the second number
-  if (waitingForSecondNumber) {
-    displayData = [];
-    waitingForSecondNumber = false;
+function inputDigit(digit) {
+  if (currentValue === "Error" || shouldResetDisplay) {
+    currentValue = "0";
+    shouldResetDisplay = false;
   }
 
-  // Prevent multiple decimal points
-  if (value === ".") {
-    if (displayData.includes(".")) {
-      return;
-    }
-
-    // If decimal is first input
-    if (displayData.length === 0) {
-      displayData.push("0");
-    }
+  if (digit === ".") {
+    if (currentValue.includes(".")) return;
+    currentValue += ".";
+  } else if (currentValue === "0") {
+    currentValue = digit;
+  } else {
+    currentValue += digit;
   }
-
-  // Prevent multiple leading zeros
-  if (value === "0" && displayData.length === 1 && displayData[0] === "0") {
-    return;
-  }
-
-  displayData.push(value);
-
-  display.innerText = displayData.join("");
-
-  console.log("Display:", displayData);
+  updateDisplay();
 }
 
-// -----------------------------------
-// Choose Operator
-// -----------------------------------
+function selectOperator(selectedOperator) {
+  if (currentValue === "Error") return;
+  const inputNumber = Number(currentValue);
 
-function chooseOperator(selectedOperator) {
-  // Don't allow operator without number
-  if (displayData.length === 0) {
-    return;
+  // Evaluate pending operations first, so chained calculations behave predictably.
+  if (operator && !shouldResetDisplay) {
+    const result = performCalculation(firstNumber, inputNumber, operator);
+    if (result === null) return;
+    currentValue = formatResult(result);
+    firstNumber = result;
+  } else if (firstNumber === null) {
+    firstNumber = inputNumber;
   }
-
-  // If user presses operator again,
-  // just change the operator
-  if (waitingForSecondNumber) {
-    operator = selectedOperator;
-    previousDisplay.innerText = `${firstNumber} ${operator}`;
-    return;
-  }
-
-  firstNumber = Number(displayData.join(""));
 
   operator = selectedOperator;
-
-  previousDisplay.innerText = `${firstNumber} ${operator}`;
-
-  waitingForSecondNumber = true;
-
-  console.log("First Number:", firstNumber);
-  console.log("Operator:", operator);
+  shouldResetDisplay = true;
+  previousDisplay.textContent = `${formatResult(firstNumber)} ${operator}`;
+  updateDisplay();
 }
-
-// -----------------------------------
-// Calculate
-// -----------------------------------
 
 function calculate() {
-  // We need first number + operator + second number
-  if (firstNumber === null || operator === null || displayData.length === 0) {
-    return;
-  }
+  if (!operator || shouldResetDisplay || currentValue === "Error") return;
+  const secondNumber = Number(currentValue);
+  const result = performCalculation(firstNumber, secondNumber, operator);
+  if (result === null) return;
 
-  let secondNumber = Number(displayData.join(""));
+  previousDisplay.textContent = `${formatResult(firstNumber)} ${operator} ${formatResult(secondNumber)} =`;
+  currentValue = formatResult(result);
+  firstNumber = null;
+  operator = null;
+  shouldResetDisplay = true;
+  updateDisplay();
+}
+
+function performCalculation(left, right, selectedOperator) {
+  if ((selectedOperator === "÷" || selectedOperator === "%") && right === 0) {
+    showError("Cannot divide by zero");
+    return null;
+  }
 
   let result;
-
-  switch (operator) {
-    case "+":
-      result = firstNumber + secondNumber;
-      break;
-
-    case "−":
-      result = firstNumber - secondNumber;
-      break;
-
-    case "×":
-      result = firstNumber * secondNumber;
-      break;
-
-    case "÷":
-      if (secondNumber === 0) {
-        display.innerText = "Error";
-        return;
-      }
-
-      result = firstNumber / secondNumber;
-      break;
-
-    case "%":
-      result = firstNumber % secondNumber;
-      break;
-
-    default:
-      return;
+  switch (selectedOperator) {
+    case "+": result = left + right; break;
+    case "−": result = left - right; break;
+    case "×": result = left * right; break;
+    case "÷": result = left / right; break;
+    case "%": result = left % right; break;
+    default: return null;
   }
-
-  // Remove unnecessary decimal digits
-  result = Number(result.toFixed(10));
-
-  previousDisplay.innerText = `${firstNumber} ${operator} ${secondNumber} =`;
-
-  display.innerText = result;
-
-  // Store result for next calculation
-  displayData = String(result).split("");
-
-  firstNumber = null;
-  operator = null;
-  waitingForSecondNumber = true;
-
-  console.log("Result:", result);
+  if (!Number.isFinite(result)) {
+    showError("Result is too large");
+    return null;
+  }
+  return result;
 }
 
-// -----------------------------------
-// Clear Calculator
-// -----------------------------------
+function formatResult(value) {
+  // Remove floating-point tails without truncating valid results.
+  return String(Number(value.toPrecision(12)));
+}
+
+function showError(message) {
+  currentValue = "Error";
+  firstNumber = null;
+  operator = null;
+  shouldResetDisplay = true;
+  previousDisplay.textContent = message;
+  updateDisplay();
+}
 
 function clearCalculator() {
-  displayData = [];
-
+  currentValue = "0";
   firstNumber = null;
-
   operator = null;
-
-  waitingForSecondNumber = false;
-
-  display.innerText = "0";
-
-  previousDisplay.innerText = "";
+  shouldResetDisplay = false;
+  previousDisplay.textContent = "";
+  updateDisplay();
 }
 
-// -----------------------------------
-// Delete Last Character
-// -----------------------------------
-
 function deleteLast() {
-  // Don't delete if waiting for second number
-  if (waitingForSecondNumber) {
-    return;
-  }
+  if (shouldResetDisplay || currentValue === "Error") return;
+  currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : "0";
+  if (currentValue === "-" || currentValue === "") currentValue = "0";
+  updateDisplay();
+}
 
-  displayData.pop();
-
-  if (displayData.length === 0) {
-    display.innerText = "0";
-  } else {
-    display.innerText = displayData.join("");
-  }
+function updateDisplay() {
+  display.textContent = currentValue;
 }
