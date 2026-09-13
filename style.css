@@ -1,0 +1,178 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e0e5ec;
+  font-family: Arial, sans-serif;
+}
+
+/* Calculator */
+
+.calculator {
+  width: 350px;
+  padding: 25px;
+  border-radius: 30px;
+  background: #e0e5ec;
+
+  box-shadow:
+    15px 15px 30px #bec3c9,
+    -15px -15px 30px #ffffff;
+}
+
+/* Display */
+
+.display {
+  width: 100%;
+  min-height: 110px;
+  margin-bottom: 25px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+
+  border-radius: 20px;
+  background: #e0e5ec;
+
+  box-shadow:
+    inset 8px 8px 16px #bec3c9,
+    inset -8px -8px 16px #ffffff;
+
+  overflow: hidden;
+}
+
+#previousDisplay {
+  width: 100%;
+  min-height: 25px;
+  color: #7b8088;
+  font-size: 16px;
+  text-align: right;
+}
+
+#currentDisplay {
+  width: 100%;
+  color: #34383f;
+  font-size: 38px;
+  font-weight: 600;
+  text-align: right;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Buttons Container */
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+/* Buttons */
+
+.btn {
+  height: 60px;
+  border: none;
+  outline: none;
+
+  border-radius: 18px;
+
+  background: #e0e5ec;
+  color: #454a52;
+
+  font-size: 20px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    7px 7px 14px #bec3c9,
+    -7px -7px 14px #ffffff;
+
+  transition: all 0.15s ease;
+}
+
+/* Hover */
+
+.btn:hover {
+  color: #22262c;
+  transform: translateY(-2px);
+}
+
+/* Click / Press */
+
+.btn:active {
+  transform: translateY(2px);
+
+  box-shadow:
+    inset 5px 5px 10px #bec3c9,
+    inset -5px -5px 10px #ffffff;
+}
+
+/* Operators */
+
+.operator {
+  color: #59616b;
+  font-size: 22px;
+}
+
+/* Clear */
+
+.btn-clear {
+  color: #c94c4c;
+}
+
+/* Delete */
+
+.btn-delete {
+  color: #c2763e;
+}
+
+/* Equal Button */
+
+.btn-equal {
+  grid-column: span 2;
+
+  color: #ffffff;
+  background: #596b7d;
+
+  box-shadow:
+    7px 7px 14px #bec3c9,
+    -7px -7px 14px #ffffff;
+}
+
+.btn-equal:hover {
+  background: #4d5e6f;
+  color: #ffffff;
+}
+
+.btn-equal:active {
+  box-shadow:
+    inset 5px 5px 10px #3e4c59,
+    inset -5px -5px 10px #687c90;
+}
+
+/* Responsive */
+
+@media (max-width: 400px) {
+  .calculator {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .btn {
+    height: 55px;
+  }
+
+  #currentDisplay {
+    font-size: 32px;
+  }
+}
